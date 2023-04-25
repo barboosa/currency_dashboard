@@ -1,4 +1,4 @@
-# Currency Dynamics Explorer
+# Currency Dashboard
 A Dashboard for Analyzing Currency Trends and Correlations based on Historical Events
 
 # Dependencies
