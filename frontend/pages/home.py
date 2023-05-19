@@ -37,11 +37,5 @@ layout = dbc.Container([
                 html.Li("Datetime - A module for working with dates and times")
             ], className="list-unstyled text-muted text-center")
         ], className="mt-5")
-    ]),
-    dbc.Row([
-        dbc.Col([
-            html.P("Thank you to the used libraries for their valuable contributions:",
-                   className="text-center mt-5 text-muted")
-        ])
     ])
 ], className="mt-5")
