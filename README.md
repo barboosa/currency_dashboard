@@ -26,4 +26,4 @@ gunicorn app:server -b 127.0.0.1:8050
 ## Testing
 
 ## License
-Distributed under the MIT License. See LICENSE.txt for more information.
+Distributed under the MIT License. See `LICENSE.txt` for more information.
