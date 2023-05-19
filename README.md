@@ -12,13 +12,13 @@ pip install -r requirements.txt
 To run the backend execute following commands.
 ```
 cd backend 
-uvicorn main:app --reload
+gunicorn app:main -b 127.0.0.1:8000
 ```
 ### Frontend
 To run the frontend execute following commands.
 ```
 cd frontend 
-uvicorn main:app --reload
+gunicorn app:server -b 127.0.0.1:8050
 ```
 ## Usage
 
