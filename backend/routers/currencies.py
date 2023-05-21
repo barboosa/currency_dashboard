@@ -1,7 +1,10 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
+import aiohttp
+import asyncio
 import yfinance as yf
 import pandas as pd
 from datetime import date
+from concurrent.futures import ProcessPoolExecutor
 
 router = APIRouter()
 
@@ -10,6 +13,9 @@ router = APIRouter(
     tags=["currencies"]
 )
 
+
+# Create a ProcessPoolExecutor
+executor = ProcessPoolExecutor(max_workers=20)
 
 def supported_currency_pairs():
     currencies = ['EUR', 'USD', 'JPY', 'GBP', 'AUD', 'CAD', 'CHF', 'NZD']
@@ -22,34 +28,53 @@ def supported_currency_pairs():
 def read_currency_pairs() -> list:
     return supported_currency_pairs()
 
+def fetch_data(currency_pair: str, start_date: date, end_date: date):
+    print(f"Start fetching data for {currency_pair}")
+    try:
+        data = yf.download(currency_pair, start=start_date, end=end_date)
+        if data.empty:
+            print(f"No data for {currency_pair}")
+            return {}
+        else:
+            print(f"Finished fetching data for {currency_pair}")
+            return {currency_pair: data['Close']}
+    except Exception as e:
+        print(f"Error fetching data for {currency_pair}: {e}")
+        return {}
 
 @router.get("/currency-correlations")
-def read_currency_calculations(start_date: date, end_date: date) -> dict:
+async def read_currency_calculations(start_date: date, end_date: date) -> dict:
     currency_pairs = supported_currency_pairs()
 
     price_data = {}
-    for currency_pair in currency_pairs:
-        data = yf.download(currency_pair, start=start_date, end=end_date)
-        if data.empty:
-            continue
-        price_data[currency_pair] = data['Close']
+
+    loop = asyncio.get_event_loop()
+    tasks = [loop.run_in_executor(executor, fetch_data, currency_pair, start_date, end_date) for currency_pair in currency_pairs]
+
+    results = await asyncio.gather(*tasks)
+
+    for result in results:
+        if result:
+            price_data.update(result)
 
     df = pd.DataFrame(price_data)
     correlations = df.corr()
 
     return correlations.to_dict()
 
-
 @router.get("/historic-prices")
-def read_historic_prices(start_date: date, end_date: date) -> dict:
+async def read_historic_prices(start_date: date, end_date: date) -> dict:
     currency_pairs = supported_currency_pairs()
 
     trend_data = {}
-    for currency_pair in currency_pairs:
-        data = yf.download(currency_pair, start=start_date, end=end_date)
-        if data.empty:
-            continue
-        price_series = data['Close']
-        trend_data[currency_pair] = price_series
+
+    loop = asyncio.get_event_loop()
+    tasks = [loop.run_in_executor(executor, fetch_data, currency_pair, start_date, end_date) for currency_pair in currency_pairs]
+
+    results = await asyncio.gather(*tasks)
+
+    for result in results:
+        if result:
+            trend_data.update(result)
 
     return trend_data
