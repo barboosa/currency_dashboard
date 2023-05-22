@@ -56,7 +56,7 @@ layout = dbc.Container([
                    className="text-center")
         ], width=6, className="mt-5")
     ]),
-    dbc.Row([
+    dbc.Row([ 
         dbc.Col([
             html.H5("Supported Countries:",
                    className="text-center mt-5 mb-3 font-weight-bold"),
