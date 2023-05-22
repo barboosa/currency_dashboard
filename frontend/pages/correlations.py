@@ -35,14 +35,17 @@ figure = go.Figure(
 layout = dbc.Container([
     dbc.Row([
         dbc.Col([
-            html.H2("Select Date Range"),
-            dcc.DatePickerRange(
-                id='date-picker',
-                min_date_allowed=datetime.datetime(2020, 1, 1),
-                max_date_allowed=datetime.datetime.today(),
-                start_date=start_date,
-                end_date=end_date
-            ),
+            html.Div(className='flex-container-heatmap', children=[
+                html.H5("Select Date Range:", className="label-margin"),
+                dcc.DatePickerRange(
+                    id='date-picker',
+                    min_date_allowed=datetime.datetime(2000, 1, 1),
+                    max_date_allowed=datetime.datetime.today(),
+                    start_date=start_date,
+                    end_date=end_date,
+                    className='dcc_control'
+                ),
+            ]),
             dcc.Loading(
                 id="loading",
                 type="circle",
@@ -55,7 +58,6 @@ layout = dbc.Container([
         ])
     ])
 ])
-
 
 @callback(
     Output('heatmap', 'figure'),
