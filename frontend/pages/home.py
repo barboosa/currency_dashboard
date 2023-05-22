@@ -1,5 +1,39 @@
-from dash import html
+from dash import html, dcc
 import dash_bootstrap_components as dbc
+import plotly.graph_objs as go
+import requests
+
+response = requests.get("http://127.0.0.1:8000/countries")
+supported_countries = response.json()
+
+country_codes = [country['countryAlpha3'] for country in supported_countries]
+hover_text = [f"{country['name']} ({country['currencyAlpha3']})" for country in supported_countries]
+
+map_figure = go.Figure(data=go.Choropleth(
+    locations=country_codes,
+    z=[1]*len(country_codes),
+    text=hover_text,
+    hoverinfo='text',
+    colorscale='solar',
+    autocolorscale=False,
+    showscale=False,
+    geo='geo'
+))
+
+map_figure.update_layout(
+    geo=dict(
+        showframe=False,
+        projection_type='equirectangular'
+    ),
+    autosize=True,
+    dragmode = False,
+    margin=dict(
+        autoexpand=True,
+        l=0,
+        r=0,
+        t=0,
+    ),
+)
 
 layout = dbc.Container([
     dbc.Row([
@@ -24,18 +58,13 @@ layout = dbc.Container([
     ]),
     dbc.Row([
         dbc.Col([
-            html.P("Libraries used:",
+            html.H5("Supported Countries:",
                    className="text-center mt-5 mb-3 font-weight-bold"),
-            html.Ul([
-                html.Li(
-                    "Dash - A productive Python framework for building web applications"),
-                html.Li("Plotly - An open-source graphing library for Python"),
-                html.Li(
-                    "Pandas - A powerful data manipulation and analysis library"),
-                html.Li(
-                    "Requests - A versatile HTTP library for making API requests"),
-                html.Li("Datetime - A module for working with dates and times")
-            ], className="list-unstyled text-muted text-center")
         ], className="mt-5")
-    ])
+    ]),
+    dbc.Row([
+        dbc.Col([
+            dcc.Graph(figure=map_figure, style={'height': '600px'}),
+        ], style={'padding': '20px'})
+    ]),
 ], className="mt-5")
