@@ -35,7 +35,7 @@ figure = go.Figure(
 layout = dbc.Container([
     dbc.Row([
         dbc.Col([
-            html.Div(className='flex-container-heatmap', children=[
+            html.Div(className='flex-container-align-left', children=[
                 html.H5("Select Date Range:", className="label-margin"),
                 dcc.DatePickerRange(
                     id='date-picker',
@@ -65,22 +65,24 @@ layout = dbc.Container([
      Input('date-picker', 'end_date')]
 )
 def update_graph(start_date, end_date):
-    start_date = dt.strptime(start_date.split(
-        'T')[0], '%Y-%m-%d').strftime('%Y-%m-%d')
-    end_date = dt.strptime(end_date.split(
-        'T')[0], '%Y-%m-%d').strftime('%Y-%m-%d')
+    start_date = dt.strptime(start_date.split('T')[0], '%Y-%m-%d').strftime('%Y-%m-%d')
+    end_date = dt.strptime(end_date.split('T')[0], '%Y-%m-%d').strftime('%Y-%m-%d')
 
-    data = requests.get(
-        f'http://127.0.0.1:8000/currencies/currency-correlations?start_date={start_date}&end_date={end_date}').json()
+    data = requests.get(f'http://127.0.0.1:8000/currencies/currency-correlations?start_date={start_date}&end_date={end_date}').json()
     df = pd.DataFrame(data)
     df.columns = df.columns.str.replace('=X', '')
+    df.index = df.index.str.replace('=X', '')
+    average_correlation = df.mean()
+    df = df.reindex(average_correlation.sort_values().index, axis=1)
+    average_correlation = average_correlation.sort_values()
+    df = df.reindex(average_correlation.index)
 
     figure = go.Figure(
         data=go.Heatmap(
             z=df.values,
             x=df.columns,
             y=df.columns,
-            colorscale='RdBu',
+            colorscale='sunset',
             colorbar=dict(title='Correlation Coefficient'),
             hoverongaps=False
         ),

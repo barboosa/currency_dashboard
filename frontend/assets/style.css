@@ -10,7 +10,7 @@ body {
     flex-wrap: wrap;
 }
 
-.flex-container-heatmap {
+.flex-container-align-left {
     display: flex;
     align-items: center;
 }
