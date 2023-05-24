@@ -6,6 +6,8 @@ import pandas as pd
 import requests
 import datetime
 from datetime import datetime as dt
+import scipy.spatial as sp, scipy.cluster.hierarchy as hc
+import numpy as np
 
 end_date = datetime.datetime.now() - datetime.timedelta(days=1)
 start_date = datetime.datetime.now() - datetime.timedelta(days=7)
@@ -72,17 +74,19 @@ def update_graph(start_date, end_date):
     df = pd.DataFrame(data)
     df.columns = df.columns.str.replace('=X', '')
     df.index = df.index.str.replace('=X', '')
-    average_correlation = df.mean()
-    df = df.reindex(average_correlation.sort_values().index, axis=1)
-    average_correlation = average_correlation.sort_values()
-    df = df.reindex(average_correlation.index)
+
+    dist_matrix = np.sqrt(0.5*(1-df))
+    linkage = hc.linkage(sp.distance.squareform(dist_matrix), method='ward')
+    leaves = hc.leaves_list(linkage)
+    col_order = [df.columns[i] for i in leaves]
+    df = df.loc[col_order, col_order]
 
     figure = go.Figure(
         data=go.Heatmap(
             z=df.values,
             x=df.columns,
             y=df.columns,
-            colorscale='sunset',
+            colorscale='RdBu',
             colorbar=dict(title='Correlation Coefficient'),
             hoverongaps=False
         ),
