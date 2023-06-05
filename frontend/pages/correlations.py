@@ -6,7 +6,8 @@ import pandas as pd
 import requests
 import datetime
 from datetime import datetime as dt
-import scipy.spatial as sp, scipy.cluster.hierarchy as hc
+import scipy.spatial as sp
+import scipy.cluster.hierarchy as hc
 import numpy as np
 
 end_date = datetime.datetime.now() - datetime.timedelta(days=1)
@@ -61,16 +62,20 @@ layout = dbc.Container([
     ])
 ])
 
+
 @callback(
     Output('heatmap', 'figure'),
     [Input('date-picker', 'start_date'),
      Input('date-picker', 'end_date')]
 )
 def update_graph(start_date, end_date):
-    start_date = dt.strptime(start_date.split('T')[0], '%Y-%m-%d').strftime('%Y-%m-%d')
-    end_date = dt.strptime(end_date.split('T')[0], '%Y-%m-%d').strftime('%Y-%m-%d')
+    start_date = dt.strptime(start_date.split(
+        'T')[0], '%Y-%m-%d').strftime('%Y-%m-%d')
+    end_date = dt.strptime(end_date.split(
+        'T')[0], '%Y-%m-%d').strftime('%Y-%m-%d')
 
-    data = requests.get(f'http://127.0.0.1:8000/currencies/currency-correlations?start_date={start_date}&end_date={end_date}').json()
+    data = requests.get(
+        f'http://127.0.0.1:8000/currencies/currency-correlations?start_date={start_date}&end_date={end_date}').json()
     df = pd.DataFrame(data)
     df.columns = df.columns.str.replace('=X', '')
     df.index = df.index.str.replace('=X', '')
