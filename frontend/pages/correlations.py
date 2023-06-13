@@ -96,7 +96,7 @@ def update_graph(start_date, end_date):
             hoverongaps=False
         ),
         layout=go.Layout(
-            title="Currency Correlations",
+            title="Currency Correlation Matrix",
             xaxis=dict(ticks='', nticks=len(df.columns)),
             yaxis=dict(ticks='', nticks=len(df.columns)),
             autosize=True,
