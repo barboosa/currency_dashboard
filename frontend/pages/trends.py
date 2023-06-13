@@ -7,7 +7,8 @@ from dash import dcc, html, Input, Output, callback
 import dash_bootstrap_components as dbc
 
 currency_data = requests.get('http://127.0.0.1:8000/currencies').json()
-currency_options = [{'label': currency.replace('=X', ''), 'value': currency} for currency in currency_data]
+currency_options = [{'label': currency.replace(
+    '=X', ''), 'value': currency} for currency in currency_data]
 
 layout = dbc.Container([
     dbc.Row([
@@ -64,7 +65,8 @@ def update_graph(start_date, end_date, selected_currencies):
     for currency_pair, price_data in data.items():
         currency_label = currency_pair.replace('=X', '')
         if currency_pair in selected_currencies:
-            df = pd.DataFrame.from_dict(price_data, orient='index', columns=[currency_label])
+            df = pd.DataFrame.from_dict(
+                price_data, orient='index', columns=[currency_label])
             df.index = pd.to_datetime(df.index)
             df = df.sort_index()
             df = df.divide(df.iloc[0]).multiply(100)
@@ -80,4 +82,3 @@ def update_graph(start_date, end_date, selected_currencies):
                       yaxis_title="Indexed Price")
 
     return fig
-
