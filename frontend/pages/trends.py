@@ -23,7 +23,7 @@ layout = dbc.Container([
             html.Div([
                 dbc.Row([
                     dbc.Col(
-                        html.H5("Select Date Range:"), width=4),
+                        html.H5("Select Date Range:"), width=3),
                     dbc.Col(
                         dcc.DatePickerRange(
                             id='date-picker',
@@ -31,7 +31,7 @@ layout = dbc.Container([
                             max_date_allowed=datetime.datetime.now() - datetime.timedelta(days=1),
                             start_date=datetime.datetime.now() - datetime.timedelta(days=7),
                             end_date=datetime.datetime.now() - datetime.timedelta(days=1),
-                        ), width=8),
+                        ), width=9),
                 ])
             ], className='dcc_control'),
         ], width=6),
