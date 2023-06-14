@@ -3,37 +3,46 @@ import dash_bootstrap_components as dbc
 import plotly.graph_objs as go
 import requests
 
-response = requests.get("http://127.0.0.1:8000/countries")
-supported_countries = response.json()
 
-country_codes = [country['countryAlpha3'] for country in supported_countries]
-hover_text = [f"{country['name']} ({country['currencyAlpha3']})" for country in supported_countries]
+def fetch_supported_countries():
+    response = requests.get("http://127.0.0.1:8000/countries")
+    return response.json()
 
-map_figure = go.Figure(data=go.Choropleth(
-    locations=country_codes,
-    z=[1]*len(country_codes),
-    text=hover_text,
-    hoverinfo='text',
-    colorscale='solar',
-    autocolorscale=False,
-    showscale=False,
-    geo='geo'
-))
 
-map_figure.update_layout(
-    geo=dict(
-        showframe=False,
-        projection_type='equirectangular'
-    ),
-    autosize=True,
-    dragmode = False,
-    margin=dict(
-        autoexpand=True,
-        l=0,
-        r=0,
-        t=0,
-    ),
-)
+def prepare_map_figure(supported_countries):
+    country_codes = [country['countryAlpha3']
+                     for country in supported_countries]
+    hover_text = [
+        f"{country['name']} ({country['currencyAlpha3']})" for country in supported_countries]
+
+    map_figure = go.Figure(data=go.Choropleth(
+        locations=country_codes,
+        z=[1]*len(country_codes),
+        text=hover_text,
+        hoverinfo='text',
+        colorscale='matter',
+        showscale=False
+    ))
+
+    map_figure.update_layout(
+        geo=dict(
+            showframe=False
+        ),
+        autosize=True,
+        dragmode=False,
+        margin=dict(
+            autoexpand=True,
+            l=0,
+            r=0,
+            t=0,
+            b=0
+        ),
+    )
+    return map_figure
+
+
+supported_countries = fetch_supported_countries()
+map_figure = prepare_map_figure(supported_countries)
 
 layout = dbc.Container([
     dbc.Row([
@@ -56,10 +65,10 @@ layout = dbc.Container([
                    className="text-center")
         ], width=6, className="mt-5")
     ]),
-    dbc.Row([ 
+    dbc.Row([
         dbc.Col([
             html.H5("Supported Countries:",
-                   className="text-center mt-5 mb-3 font-weight-bold"),
+                    className="text-center mt-5 mb-3 font-weight-bold"),
         ], className="mt-5")
     ]),
     dbc.Row([
