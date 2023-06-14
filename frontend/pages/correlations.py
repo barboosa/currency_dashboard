@@ -13,8 +13,11 @@ import numpy as np
 end_date = datetime.datetime.now() - datetime.timedelta(days=1)
 start_date = datetime.datetime.now() - datetime.timedelta(days=7)
 
+start_date_str = start_date.strftime('%Y-%m-%d')
+end_date_str = end_date.strftime('%Y-%m-%d')
+
 data = requests.get(
-    f'http://127.0.0.1:8000/currencies/currency-correlations?start_date={start_date}&end_date={end_date}').json()
+    f'http://127.0.0.1:8000/currencies/currency-correlations?start_date={start_date_str}&end_date={end_date_str}').json()
 df = pd.DataFrame(data)
 df.columns = df.columns.str.replace('=X', '')
 
