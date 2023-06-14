@@ -3,7 +3,7 @@ import datetime
 import pandas as pd
 import plotly.graph_objects as go
 from datetime import datetime as dt
-from dash import dcc, html, Input, Output, callback
+from dash import dcc, html, Input, Output, callback, Dash, exceptions
 import dash_bootstrap_components as dbc
 
 # Fetch the currencies data
@@ -20,55 +20,82 @@ historic_event_options = [{'label': event['eventName'],
 layout = dbc.Container([
     dbc.Row([
         dbc.Col([
-            html.Div(children=[
+            html.Div([
                 dbc.Row([
                     dbc.Col(
-                        html.H5("Select Date Range:")),
+                        html.H5("Select Date Range:"), width=4),
                     dbc.Col(
                         dcc.DatePickerRange(
                             id='date-picker',
-                            min_date_allowed=datetime.datetime(2000, 1, 1),
-                            max_date_allowed=datetime.datetime.today(),
+                            min_date_allowed=datetime.datetime.now() - datetime.timedelta(days=7),
+                            max_date_allowed=datetime.datetime.now() - datetime.timedelta(days=1),
                             start_date=datetime.datetime.now() - datetime.timedelta(days=7),
                             end_date=datetime.datetime.now() - datetime.timedelta(days=1),
-                        )),]),
-            ]),
-        ]),
+                        ), width=8),
+                ])
+            ], className='dcc_control'),
+        ], width=6),
+
         dbc.Col([
-            html.Div(className='dcc_control', children=[
+            html.Div([
                 dbc.Row([
                     dbc.Col(
-                        html.H5("Select Historic Event:")),
+                        html.H5("Select Historic Event:"), width=3),
                     dbc.Col(
                         dcc.Dropdown(
                             id='event-selector',
                             options=historic_event_options,
                             multi=False
-                        )),]),
-            ]),
-        ]),
+                        ), width=9),
+                ])
+            ], className='dcc_control'),
+        ], width=6),
     ]),
+
     dbc.Row([
-        html.Div(className='flex-container', children=[
-            html.H5("Select Currencies:", className="label-margin"),
-            dcc.Dropdown(
-                id='currency-selector',
-                options=currency_options,
-                value=[currency['value'] for currency in currency_options],
-                multi=True,
-                className='dcc_control'
-            ),
-        ]),
+        dbc.Col([
+            html.Div([
+                dbc.Row([
+                    dbc.Col(
+                        html.H5("Select Currencies:"), width=2),
+                    dbc.Col(
+                        dcc.Dropdown(
+                            id='currency-selector',
+                            options=currency_options,
+                            value=[currency['value']
+                                   for currency in currency_options],
+                            multi=True
+                        ), width=10),
+                ])
+            ], className='dcc_control'),
+        ], width=12),
     ]),
-    dcc.Loading(
-        id="loading",
-        type="circle",
-        children=[dcc.Graph(
-            id='currency-trends-graph',
-            style={'height': '80vh'},
-        )]
-    )
+
+    dbc.Row([
+        dcc.Loading(
+            id="loading",
+            type="circle",
+            children=[dcc.Graph(
+                id='currency-trends-graph',
+                style={'height': '80vh'},
+            )]
+        )
+    ])
 ])
+
+
+@callback(
+    Output('date-picker', 'start_date'),
+    Output('date-picker', 'end_date'),
+    [Input('event-selector', 'value')]
+)
+def update_datepicker(historic_event_date):
+    if historic_event_date is None:
+        raise exceptions.PreventUpdate
+    else:
+        historic_event_date = dt.strptime(historic_event_date, '%Y-%m-%d')
+        end_date = historic_event_date + datetime.timedelta(days=120)
+        return historic_event_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')
 
 
 @ callback(

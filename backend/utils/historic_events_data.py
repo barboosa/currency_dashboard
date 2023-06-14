@@ -4,12 +4,12 @@ historic_events = [
         "date": "2020-02-25"
     },
     {
-        "eventName": "Adoption of Paris Agreement on Climate Change",
-        "date": "2015-12-12"
+        "eventName": "British Exit from the European Union",
+        "date": "2020-01-31"
     },
     {
-        "eventName": "Start of the Syrian Civil War",
-        "date": "2011-03-15"
+        "eventName": "Greek debt crisis (Failed IMF payment)",
+        "date": "2015-06-30"
     },
     {
         "eventName": "Japan's Fukushima Daiichi nuclear disaster",
