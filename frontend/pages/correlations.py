@@ -19,6 +19,7 @@ def generate_ordering(df):
     col_order = [df.columns[i] for i in leaves]
     return col_order
 
+
 def generate_correlation_matrix(start_date_str, end_date_str, fixed_order=None):
     data = requests.get(
         f'http://127.0.0.1:8000/currencies/currency-correlations?start_date={start_date_str}&end_date={end_date_str}').json()
@@ -30,8 +31,7 @@ def generate_correlation_matrix(start_date_str, end_date_str, fixed_order=None):
     return df
 
 
-
-def generate_figure(df):
+def generate_figure(df, start_date, end_date, reorder_start_date, reorder_end_date):
     figure = go.Figure(
         data=go.Heatmap(
             z=df.values,
@@ -42,7 +42,7 @@ def generate_figure(df):
             hoverongaps=False
         ),
         layout=go.Layout(
-            title="Currency Correlation Matrix",
+            title=f"Currency Correlation Matrix (Data from {start_date} to {end_date}, reordered from {reorder_start_date} to {reorder_end_date})",
             xaxis=dict(ticks='', nticks=len(df.columns)),
             yaxis=dict(ticks='', nticks=len(df.columns)),
             autosize=True,
@@ -67,7 +67,8 @@ fixed_df = generate_correlation_matrix(
 fixed_order = fixed_df.columns.tolist()
 
 df = generate_correlation_matrix(start_date_str, end_date_str, fixed_order)
-figure = generate_figure(df)
+figure = generate_figure(df, start_date_str, end_date_str,
+                         start_date_str, end_date_str)
 
 layout = dbc.Container([
     dbc.Row([
@@ -86,7 +87,8 @@ layout = dbc.Container([
         ]),
         dbc.Col([
             html.Div(className='flex-container-align-left', children=[
-                html.H5("Select Reordering Date Range:", className="label-margin"),
+                html.H5("Select Reordering Date Range:",
+                        className="label-margin"),
                 dcc.DatePickerRange(
                     id='reorder-date-picker',
                     min_date_allowed=datetime.datetime(1980, 1, 1),
@@ -131,5 +133,6 @@ def update_graph(start_date, end_date, reorder_start_date, reorder_end_date):
     fixed_order = generate_ordering(df)
 
     df = generate_correlation_matrix(start_date, end_date, fixed_order)
-    figure = generate_figure(df)
+    figure = generate_figure(df, start_date, end_date,
+                             reorder_start_date, reorder_end_date)
     return figure

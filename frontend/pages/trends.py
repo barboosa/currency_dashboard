@@ -43,12 +43,12 @@ def fetch_and_format_currency_data(start_date, end_date, selected_currencies):
     return currency_data
 
 
-def generate_figure(currency_data):
+def generate_figure(currency_data, start_date, end_date):
     fig = go.Figure()
     for currency_label, price_data in currency_data.items():
         fig.add_trace(go.Scatter(x=price_data.index,
                       y=price_data[currency_label], name=currency_label))
-    fig.update_layout(title="Currency Trends Over Time",
+    fig.update_layout(title=f"Currency Trends Over Time (Data from {start_date} to {end_date})",
                       xaxis_title="Date", yaxis_title="Normalized Price")
     return fig
 
@@ -150,4 +150,4 @@ def update_graph(start_date, end_date, selected_currencies):
     currency_data = fetch_and_format_currency_data(
         start_date, end_date, selected_currencies)
 
-    return generate_figure(currency_data)
+    return generate_figure(currency_data, start_date, end_date)
