@@ -9,21 +9,20 @@ cd currency_dashboard
 pip install -r requirements.txt
 ```
 ### Backend
-To run the backend execute following commands.
+To run the backend execute following command.
 ```
 cd backend 
-uvicorn app:main --port 8000
+uvicorn main:app --port 8000
 ```
 ### Frontend
-To run the frontend execute following commands.
+To run the frontend execute following command in the /frontend folder.
 ```
 cd frontend 
-uvicorn app:app --port 8050
+python.exe app.py
 ```
 ## Usage
-
-
-## Testing
+In this Currency Dashboard you can do muliple things. In the Trends Page it is possible to get nromalized historic currency values. These are usefull to check how the influence of a specific event or date was on the forex market.
+![Home Page](docs/image.png)
 
 ## License
 Distributed under the MIT License. See `LICENSE.txt` for more information.

@@ -5,8 +5,6 @@ import dash_bootstrap_components as dbc
 app = Dash(__name__, suppress_callback_exceptions=True,
            external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.title = 'Currencies Dashboard'
-server = app.server
-
 
 navbar = dbc.NavbarSimple(
     children=[
